@@ -1,40 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import style from "./AvailableMeals.module.css";
 import Card from "../UI/Card";
 import MealItem from "./MealItem";
 
-const DUMMY_MEALS = [
-  {
-    id: "m1",
-    name: "Sushi",
-    description: "Finest fish and veggies",
-    price: 22.99,
-  },
-  {
-    id: "m2",
-    name: "Schnitzel",
-    description: "A german specialty!",
-    price: 16.5,
-  },
-  {
-    id: "m3",
-    name: "Barbecue Burger",
-    description: "American, raw, meaty",
-    price: 12.99,
-  },
-
-  {
-    id: "m4",
-    name: "Green Bowl",
-    description: "Healthy...and green...",
-    price: 18.99,
-  },
-];
-
 export default function AvailableMeals(props) {
+  const [meals, setMeals] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+
+  useEffect(() => {
+    async function fetchMeals() {
+      setIsLoading(true);
+
+      const response = await fetch(
+        "https://react-apps-d280e-default-rtdb.firebaseio.com/Meals.json"
+      );
+      console.log(response);
+
+      if (!response.ok) throw new Error("Something went wrong");
+
+      const data = await response.json();
+
+      const loadedMeals = [];
+
+      for (const key in data) {
+        loadedMeals.push({
+          id: key,
+          ...data[key],
+        });
+      }
+      setMeals(loadedMeals);
+
+      setIsLoading(false);
+    }
+    //
+
+    fetchMeals().catch((err) => {
+      setError(err.message);
+      setIsLoading(false);
+      console.log(err.message);
+    });
+  }, []);
+
+  if (error) {
+    return (
+      <section className={style.meals}>
+        <Card className={style.isLoading}>{error}</Card>;
+      </section>
+    );
+  }
+
   const mealsList = (
     <ul>
-      {DUMMY_MEALS.map((meal) => (
+      {meals.map((meal) => (
         <MealItem key={meal.id} {...meal} />
       ))}
     </ul>
@@ -42,7 +60,12 @@ export default function AvailableMeals(props) {
 
   return (
     <section className={style.meals}>
-      <Card>{mealsList}</Card>
+      {isLoading && (
+        <Card className={style.isLoading}>
+          <p>Loading...</p>
+        </Card>
+      )}
+      {!isLoading && <Card>{mealsList}</Card>}
     </section>
   );
 }
