@@ -20,6 +20,8 @@ export default function AvailableMeals(props) {
       if (!response.ok) throw new Error("Something went wrong");
 
       const data = await response.json();
+      console.log(data);
+
 
       const loadedMeals = [];
 
@@ -35,7 +37,7 @@ export default function AvailableMeals(props) {
     }
     //
 
-    fetchMeals().catch((err) => {
+    fetchMeals().catch((err) => { // why does try and catch not work here? watch tutorial to reconfirm
       setError(err.message);
       setIsLoading(false);
       console.log(err.message);

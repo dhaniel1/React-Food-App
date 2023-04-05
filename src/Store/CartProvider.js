@@ -46,7 +46,11 @@ function cartReducer(prevState, action) {
     }
     return { items: updatedItems, totalAmount: updatedTotalAmount };
   }
-} 
+
+  if(action.type === 'CLEAR'){
+    return defaultCartState;
+  }
+}
 
 const defaultCartState = {
   items: [], // Items will receive an array of objects such as {amount, price, id, name }
@@ -68,11 +72,17 @@ export default function CartProvider(props) {
     dispatchCartState({ type: "REMOVE", id: id });
   }
 
+  function clearItemInCartHandler(){
+    dispatchCartState({ type: "CLEAR"});
+
+  }
+
   const cartContext = {
     items: cartState.items,
     totalAmount: cartState.totalAmount,
     addItem: addItemToCartHandler,
     removeItem: removeItemFromCartHandler,
+    clearItem: clearItemInCartHandler,
   };
 
   return (

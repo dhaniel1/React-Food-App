@@ -25,7 +25,7 @@ export default function MealItem(props) {
         <div className={style.price}>{price}</div>
       </div>
       <div>
-        <MealItemForm id={props.id} onAddToCart={addToCartHandler} />
+        <MealItemForm onAddToCart={addToCartHandler} />
       </div>
     </li>
   );
